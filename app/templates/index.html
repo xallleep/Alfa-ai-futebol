@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Previsões de Futebol Profissionais</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Previsões de Futebol</h1>
+            <p class="subtitle">Análises profissionais atualizadas diariamente</p>
+        </header>
+        
+        <div class="last-update">
+            Última atualização: {{ predictions[0].analysis_date.strftime('%d/%m/%Y %H:%M') if predictions else 'N/A' }}
+        </div>
+        
+        <div class="predictions-container">
+            {% if predictions %}
+                {% for prediction in predictions %}
+                <div class="prediction-card animate-in" style="animation-delay: {{ loop.index * 0.2 }}s">
+                    <div class="match-header">
+                        <span class="league">{{ prediction.league }}</span>
+                        <span class="match-date">{{ prediction.match_date.strftime('%d/%m/%Y %H:%M') }}</span>
+                    </div>
+                    
+                    <div class="teams">
+                        <div class="team home-team">
+                            <span class="team-name">{{ prediction.home_team }}</span>
+                        </div>
+                        <div class="vs">vs</div>
+                        <div class="team away-team">
+                            <span class="team-name">{{ prediction.away_team }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="prediction-main">
+                        <div class="score-prediction">
+                            <h3>Placar Previsto</h3>
+                            <div class="score">{{ prediction.predicted_score }}</div>
+                            <div class="confidence">
+                                Confiança: {{ prediction.confidence }}%
+                                <div class="confidence-bar">
+                                    <div class="confidence-level" style="width: {{ prediction.confidence }}%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="stats-predictions">
+                            <div class="stat">
+                                <h4>Escanteios</h4>
+                                <div class="stat-value">{{ prediction.corners_prediction }}</div>
+                            </div>
+                            <div class="stat">
+                                <h4>Cartões Amarelos</h4>
+                                <div class="stat-value">{{ prediction.yellow_cards_prediction }}</div>
+                            </div>
+                            <div class="stat">
+                                <h4>Cartões Vermelhos</h4>
+                                <div class="stat-value">{{ prediction.red_cards_prediction }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="no-predictions">
+                    <p>Nenhuma previsão disponível no momento.</p>
+                    <p>As previsões são atualizadas diariamente às 8:00 AM.</p>
+                </div>
+            {% endif %}
+        </div>
+        
+        <footer>
+            <p>© 2023 Previsões de Futebol Profissionais</p>
+            <p class="disclaimer">
+                Disclaimer: Estas são previsões estatísticas e não garantem resultados reais.
+                Use por sua própria conta e risco.
+            </p>
+        </footer>
+    </div>
+    
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
