@@ -10,7 +10,7 @@ def init_routes(app):
         predictions = Prediction.query.filter(
             Prediction.match_date >= today
         ).order_by(
-            Prediction.match_date.asc()
+            Prediction.match_date.asc
         ).limit(10).all()
         
         return render_template('index.html', predictions=predictions)
