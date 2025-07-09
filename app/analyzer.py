@@ -1,60 +1,21 @@
-import requests
-from bs4 import BeautifulSoup
-from datetime import datetime, timedelta
-from app import db
+from datetime import datetime
 from app.models import Prediction
-from .analyzer import analyze_match
 
-def get_football_data():
-    # Fontes de dados reais (exemplos)
-    sources = [
-        'https://www.football-data.co.uk/',
-        'https://fbref.com/',
-        'https://www.soccerstats.com/',
-        'https://www.whoscored.com/'
-    ]
+def analyze_match(match_data):
+    stats = match_data['stats']
     
-    # Aqui você implementaria a raspagem real de cada site
-    # Esta é uma implementação simulada para demonstração
+    # Lógica de análise mantida conforme seu original
+    home_goals = min(3, int(len([x for x in stats['home_form'] if x == 'W']) * 0.6))
+    away_goals = min(2, int(len([x for x in stats['away_form'] if x == 'W']) * 0.4))
     
-    matches = []
-    
-    try:
-        # Simulando dados raspados
-        today = datetime.now()
-        for i in range(10):
-            match_date = today + timedelta(days=i)
-            matches.append({
-                'league': 'Brasileirão Série A',
-                'home_team': f'Time Casa {i+1}',
-                'away_team': f'Time Fora {i+1}',
-                'match_date': match_date,
-                'stats': {
-                    'last_meetings': {'home_wins': 2, 'away_wins': 1, 'draws': 2},
-                    'home_form': ['W', 'D', 'L', 'W', 'W'],
-                    'away_form': ['L', 'W', 'D', 'L', 'W'],
-                    'injuries': {'home': 2, 'away': 1},
-                    'avg_corners': {'home': 5.2, 'away': 4.8, 'total': 10.0},
-                    'avg_cards': {'home_yellow': 2.1, 'away_yellow': 2.3, 'red': 0.2}
-                }
-            })
-    except Exception as e:
-        print(f"Erro ao raspar dados: {e}")
-    
-    return matches
-
-def daily_scrape_and_analyze():
-    print("Iniciando raspagem e análise diária...")
-    matches_data = get_football_data()
-    
-    # Limpar previsões antigas
-    Prediction.query.delete()
-    
-    for match in matches_data:
-        prediction = analyze_match(match)
-        
-        # Salvar no banco de dados
-        db.session.add(prediction)
-    
-    db.session.commit()
-    print("Análise diária concluída!")
+    return Prediction(
+        league=match_data['league'],
+        home_team=match_data['home_team'],
+        away_team=match_data['away_team'],
+        predicted_score=f"{home_goals}-{away_goals}",
+        corners_prediction=f"{int(stats['avg_corners']['total'])}+ cantos",
+        yellow_cards_prediction=f"{int(stats['avg_cards']['home_yellow'] + stats['avg_cards']['away_yellow'])}+ amarelos",
+        red_cards_prediction="0-2 vermelhos",
+        confidence=70,
+        match_date=match_data['match_date']
+    )

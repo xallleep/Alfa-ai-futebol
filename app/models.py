@@ -10,7 +10,7 @@ class Prediction(db.Model):
     corners_prediction = db.Column(db.String(50), nullable=False)
     yellow_cards_prediction = db.Column(db.String(50), nullable=False)
     red_cards_prediction = db.Column(db.String(50), nullable=False)
-    confidence = db.Column(db.Integer, nullable=False)  # 1-100%
+    confidence = db.Column(db.Integer, nullable=False)
     analysis_date = db.Column(db.DateTime, default=datetime.utcnow)
     match_date = db.Column(db.DateTime, nullable=False)
     
